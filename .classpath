@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" output="bin" path="src"/>
+	<classpathentry kind="src" path="tests"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="libs/core.jar"/>
+	<classpathentry kind="lib" path="lib/bridj-0.6.2-windows-only.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Tobii Gaze SDK (Java)"/>
+	<classpathentry kind="output" path="resources/code"/>
+</classpath>
