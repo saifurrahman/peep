@@ -30,9 +30,8 @@ package peep;
 
 import java.awt.GraphicsDevice;
 import java.awt.Point;
-import java.awt.Rectangle;
 
-import processing.core.*;
+import processing.core.PApplet;
 import tobii.APIException;
 import tobii.GazeEvent;
 import tobii.GazeListener;
@@ -84,6 +83,7 @@ public class PEEP implements GazeListener {
 	 */
 	public PEEP(PApplet theParent) {
 		processing = theParent;
+		filter(Filter.NONE);
 		
 		initalizeTracking();
 	}
@@ -132,12 +132,16 @@ public class PEEP implements GazeListener {
 	}
 	
 	protected V2 screenpx2window(V2 rel) {
-		final Point bounds = this.processing.frame.getLocationOnScreen();
-		
-		int x = (int) (rel.x() - bounds.x);
-		int y = (int) (rel.y() - bounds.y);
-		
-		return new V2(x, y);
+		try {
+			final Point bounds = this.processing.getLocationOnScreen();
+						
+			int x = (int) (rel.x() - bounds.x);
+			int y = (int) (rel.y() - bounds.y);
+			
+			return new V2(x, y);			
+		} catch(Exception e) {
+			return new V2(-1, -1);
+		}
 	}
 
 
