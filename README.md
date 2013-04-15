@@ -13,7 +13,7 @@ Please note, PEEP 3.0 requires Windows and a 64 bit JVM at the moment.
 
 ## Quickstart ##
 
-Download the __[latest release of the Java Bindings](http://s.xr.io/peep/latest.zip)__ and place the whole `PEEP` folder into Processing's `libraries` folder. If you need help see the section [Manual Install in this document](http://wiki.processing.org/w/How_to_Install_a_Contributed_Library).
+Download the __[latest release of PEEP](http://s.xr.io/peep/latest.zip)__ and place the whole `PEEP` folder into Processing's `libraries` folder. If you need help see the section [Manual Install in this document](http://wiki.processing.org/w/How_to_Install_a_Contributed_Library).
 
   
 Paste this code into your  [Processing](http://processing.org) sketch:
