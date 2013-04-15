@@ -35,8 +35,6 @@ Or, if you are using [Processing.py](https://github.com/jdf/processing.py), use 
   
 	import peep.PEEP as PEEP
 	
-	peep = None
-
 	def setup():
 	  global peep
 	  peep = PEEP(this)
