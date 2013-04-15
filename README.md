@@ -62,7 +62,7 @@ Or, if you are using [Processing.py](https://github.com/jdf/processing.py), use 
 
   Not at the moment. Please update to a 64bit JVM.
 
-
+For more questions, also see the [tobiisdk4j FAQ](https://github.com/ralfbiedert/tobiisdk4j).
 
 
 ## License ##
