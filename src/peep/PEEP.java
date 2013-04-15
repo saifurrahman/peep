@@ -27,12 +27,13 @@
 
 package peep;
 
-
 import java.awt.GraphicsDevice;
 import java.awt.Point;
 
 import processing.core.PApplet;
 import tobii.APIException;
+import tobii.Configuration;
+import tobii.EyeTracker;
 import tobii.GazeEvent;
 import tobii.GazeListener;
 import tobii.MouseTracker;
@@ -42,17 +43,17 @@ import tobii.util.V2;
 /**
  * Entry point into the PEEP library.
  * 
- * @example Hello 
+ * @example PEEP
  * 
  */
 public class PEEP implements GazeListener {
-	
+
 	/** The current library version */
 	public final static String VERSION = "##library.prettyVersion##";
-	
-	/** Link to parent */	
+
+	/** Link to parent */
 	protected final PApplet processing;
-	
+
 	/** The current filter for the raw gaze data */
 	protected Filter filter;
 
@@ -60,40 +61,98 @@ public class PEEP implements GazeListener {
 	private volatile GazeEvent lowlevelGazeEvent = null;
 
 	/** The current filter for the raw gaze data */
-	private volatile Gaze raw;
+	private volatile Raw raw;
 
 	/** The current tracking device */
 	private Tracker tracker;
-	
+
+	/**
+	 * The ID of the tracker (e.g., "mouse", "auto",
+	 * "tet-tcp://REXDL-010103004843.local."
+	 */
+	private String trackerID;
+
 	public PEEP filter(Filter filter) {
 		this.filter = filter;
-		
+
 		gazeEvent(null);
-		
+
 		return this;
 	}
-	
-	
 
 	/**
 	 * Creates a new eye tracking connection.
 	 * 
-	 * @example Hello
-	 * @param theParent Parent sketch containing this connection.
+	 * @example PEEP
+	 * @param theParent
+	 *            Parent sketch containing this connection.
 	 */
 	public PEEP(PApplet theParent) {
-		processing = theParent;
+		this(theParent, "auto");
+	}
+
+	/**
+	 * Creates a new eye tracking connection.
+	 * 
+	 * @example PEEP
+	 * @param theParent
+	 *            Parent sketch containing this connection.
+	 */
+	public PEEP(PApplet theParent, String trackerID) {
+		this.processing = theParent;
+		this.trackerID = trackerID == null ? "auto" : trackerID;
+
 		filter(Filter.NONE);
-		
+
 		initalizeTracking();
 	}
-	
-	private void initalizeTracking() {
+
+	/** Terminate the old tracker if possible */
+	private void terminateOldTracker() {
+		if (this.tracker != null) {
+			try {
+				this.tracker.deregister(this).stop().disconnect();
+			} catch (APIException e) {
+				exception(e);
+			}
+		}
+	}
+
+	/** Start using the mouse tracker */
+	private void useMouseTracker() {
+		terminateOldTracker();
+
 		try {
-			this.tracker = new MouseTracker();						
-			this.tracker.register(this).connect().start();			
-		} catch(APIException e) {
+			this.tracker = new MouseTracker();
+			this.tracker.register(this).connect().start();
+		} catch (APIException e) {
 			exception(e);
+		}
+	}
+
+	/** Initialize eye tracking */
+	private void initalizeTracking() {
+		terminateOldTracker();
+
+		if ("mouse".equals(this.trackerID)) {
+			useMouseTracker();
+		} else if ("auto".equals(this.trackerID)) {
+			// In auto, first try to connect, then fall back to manual mode
+			try {
+				this.tracker = new EyeTracker(new Configuration());
+				this.tracker.register(this).connect().start();
+			} catch (APIException e) {
+				useMouseTracker();
+			}
+		} else {
+			// In this case we assume we have a true tracker URL.
+			try {
+				this.tracker = new EyeTracker(new Configuration(),
+						this.trackerID);
+				this.tracker.register(this).connect().start();
+			} catch (APIException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -102,64 +161,64 @@ public class PEEP implements GazeListener {
 		System.err.println(e);
 	}
 
-
 	/**
 	 * Returns the last gaze event.
 	 * 
-	 * @return The last event or a dummy if there was none. 
+	 * @return The last event or a dummy if there was none.
 	 */
-	public Gaze raw() {
+	public Raw raw() {
 		return this.raw;
-	} 
-	
+	}
 
 	/**
-	 * Returns the last, unfiltered, unprocessed low level gaze event as reported from 
-	 * the tracking device.
+	 * Returns the last, unfiltered, unprocessed low level gaze event as
+	 * reported from the tracking device.
 	 * 
-	 * @return The last event, or <code>null</code> if none was recorded so far. 
+	 * @return The last event, or <code>null</code> if none was recorded so far.
 	 */
 	public GazeEvent lowlevel() {
 		return this.lowlevelGazeEvent;
-	} 
-	
-	
-	protected V2 rel2pixel(V2 rel) {
-		final GraphicsDevice device = this.processing.frame.getGraphicsConfiguration().getDevice();
-		final int x = (int) (rel.x() * device.getDisplayMode().getWidth()); 
-		final int y = (int) (rel.y() * device.getDisplayMode().getHeight()); 
-		return new V2(x, y);
 	}
-	
-	protected V2 screenpx2window(V2 rel) {
+
+	protected V2 rel2pixel(V2 rel) {
 		try {
-			final Point bounds = this.processing.getLocationOnScreen();
-						
-			int x = (int) (rel.x() - bounds.x);
-			int y = (int) (rel.y() - bounds.y);
-			
-			return new V2(x, y);			
-		} catch(Exception e) {
+			final GraphicsDevice device = this.processing.frame
+					.getGraphicsConfiguration().getDevice();
+			final int x = (int) (rel.x() * device.getDisplayMode().getWidth());
+			final int y = (int) (rel.y() * device.getDisplayMode().getHeight());
+			return new V2(x, y);
+		} catch (Exception e) {
 			return new V2(-1, -1);
 		}
 	}
 
+	protected V2 screenpx2window(V2 rel) {
+		try {
+			final Point bounds = this.processing.getLocationOnScreen();
 
+			int x = (int) (rel.x() - bounds.x);
+			int y = (int) (rel.y() - bounds.y);
+
+			return new V2(x, y);
+		} catch (Exception e) {
+			return new V2(-1, -1);
+		}
+	}
 
 	@Override
 	public void gazeEvent(GazeEvent event) {
 		if (event == null) {
-			this.raw = new Gaze(this, new V2(-1, -1));
+			this.raw = Raw.empty(this);
 			return;
 		}
 
 		this.lowlevelGazeEvent = event;
-		this.raw = new Gaze(this, event);
+
+		this.raw = new Raw(this, event);
 	}
 
 	@Override
 	public void apiException(APIException exception) {
 		exception(exception);
-	} 
+	}
 }
-
