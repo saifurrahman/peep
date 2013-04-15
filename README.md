@@ -31,7 +31,7 @@ Paste this code into your  [Processing](http://processing.org) sketch:
 	}
 
  
-Or, if you are using [Processing.py](https://github.com/jdf/processing.py):
+Or, if you are using [Processing.py](https://github.com/jdf/processing.py), use the code below. To install the library there, drop the whole `PEEP` folder into `libraries/processing` within your Processing.py installation.
   
 	import peep.PEEP as PEEP
 	
