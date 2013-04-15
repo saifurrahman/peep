@@ -55,9 +55,16 @@ Or, if you are using [Processing.py](https://github.com/jdf/processing.py):
 
 ## FAQ ##
 
+  * __I am rebuilding PEEP locally, but it fails with a compilation error.__
+
+  Make sure your local Processing installation does not contain an older version of PEEP, these might conflict. If you don't and PEEP does not build, please file a bug report.
+
+
   * __Does it work with 32bit JVMs?__
 
   Not at the moment. Please update to a 64bit JVM.
+
+
 
 
 ## License ##
