@@ -16,9 +16,10 @@ Please note, PEEP 3.0 requires Windows and a 64 bit JVM at the moment.
 Download the __[latest release of the Java Bindings](http://s.xr.io/peep/latest.zip)__ and place it into Processing's `libraries` folder. If you need help see the section [Manual Install in this document](http://wiki.processing.org/w/How_to_Install_a_Contributed_Library).
 
   
-Paste this code into your sketch:
+Paste this code into your  [Processing](http://processing.org) sketch:
 
 	import PEEP.*;
+
 	PEEP peep;
 
 	void setup() {
@@ -28,6 +29,20 @@ Paste this code into your sketch:
 	void draw() {
 	  ellipse(peep.raw().x, peep.raw().y, 10, 10);  
 	}
+
+ 
+Or, if you are using [Processing.py](https://github.com/jdf/processing.py):
+  
+	import peep.PEEP as PEEP
+	
+	peep = None
+
+	def setup():
+	  global peep
+	  peep = PEEP(this)
+	
+	def draw():
+	  ellipse(peep.raw().x, peep.raw().y, 10, 10)
 
 
 
