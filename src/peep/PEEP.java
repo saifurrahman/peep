@@ -102,7 +102,7 @@ public class PEEP implements GazeListener {
 		this.processing = theParent;
 		this.trackerID = trackerID == null ? "auto" : trackerID;
 
-		filter(Filter.NONE);
+		filter(Filter.MEDIAN);
 
 		initalizeTracking();
 	}
