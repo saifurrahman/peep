@@ -142,16 +142,16 @@ public class PEEP implements GazeListener {
 				this.tracker = new EyeTracker(new Configuration());
 				this.tracker.register(this).connect().start();
 			} catch (APIException e) {
+				exception(e);
 				useMouseTracker();
 			}
 		} else {
 			// In this case we assume we have a true tracker URL.
 			try {
-				this.tracker = new EyeTracker(new Configuration(),
-						this.trackerID);
+				this.tracker = new EyeTracker(new Configuration(), this.trackerID);
 				this.tracker.register(this).connect().start();
 			} catch (APIException e) {
-				e.printStackTrace();
+				exception(e);
 			}
 		}
 	}
@@ -182,12 +182,13 @@ public class PEEP implements GazeListener {
 
 	protected V2 rel2pixel(V2 rel) {
 		try {
-			final GraphicsDevice device = this.processing.frame
-					.getGraphicsConfiguration().getDevice();
+			final GraphicsDevice device = this.processing.frame.getGraphicsConfiguration().getDevice();
 			final int x = (int) (rel.x() * device.getDisplayMode().getWidth());
 			final int y = (int) (rel.y() * device.getDisplayMode().getHeight());
 			return new V2(x, y);
 		} catch (Exception e) {
+			System.err.println("Error converting the eye tracker position to document coordinates.");
+			e.printStackTrace();
 			return new V2(-1, -1);
 		}
 	}
@@ -201,6 +202,8 @@ public class PEEP implements GazeListener {
 
 			return new V2(x, y);
 		} catch (Exception e) {
+			System.err.println("Error getting the processing location on the screen.");
+			e.printStackTrace();
 			return new V2(-1, -1);
 		}
 	}
