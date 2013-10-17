@@ -22,14 +22,5 @@ public class SimpleTest {
 			System.out.println(t + " " + x + " " + y);
 		}
 		
-		/*
-		peep.inFixation()
-		peep.inSaccade
-		
-		peep.fixation.x
-		peep.fixation.y
-		peep.fixation.changed()
-		peep.fixation.in()
-		*/
 	}
 }

@@ -217,7 +217,6 @@ public class PEEP implements GazeListener {
 		}
 
 		this.lowlevelGazeEvent = event;
-
 		this.raw = new Raw(this, event);
 	}
 
