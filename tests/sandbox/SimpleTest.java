@@ -1,7 +1,7 @@
 package sandbox;
 
-import peep.Filter;
 import peep.PEEP;
+import tobii.filter.Filter;
 
 public class SimpleTest {
 	public static void main(String[] args) throws InterruptedException {

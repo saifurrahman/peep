@@ -38,6 +38,7 @@ import tobii.GazeEvent;
 import tobii.GazeListener;
 import tobii.MouseTracker;
 import tobii.Tracker;
+import tobii.filter.Filter;
 import tobii.util.V2;
 
 /**

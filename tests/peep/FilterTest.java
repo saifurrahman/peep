@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import tobii.filter.Filter;
 import tobii.util.V2;
 import tobii.util.V3;
 import tobii.util.Vn;
