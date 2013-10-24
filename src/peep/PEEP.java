@@ -85,27 +85,39 @@ public class PEEP implements GazeListener {
 	 * Creates a new eye tracking connection.
 	 * 
 	 * @example PEEP
-	 * @param theParent
-	 *            Parent sketch containing this connection.
+	 * @param theParent Parent sketch containing this connection.
 	 */
 	public PEEP(PApplet theParent) {
-		this(theParent, "auto");
+		this(theParent, "auto", null);
 	}
 
 	/**
 	 * Creates a new eye tracking connection.
 	 * 
-	 * @example PEEP
-	 * @param theParent
-	 *            Parent sketch containing this connection.
+	 * @example PEEP 
+	 * @param theParent Parent sketch containing this connection.
+	 * @param trackerID USB-ID or URL to connect to.
+	 *  
 	 */
 	public PEEP(PApplet theParent, String trackerID) {
+		this(theParent, trackerID, null);
+	}
+	
+	/**
+	 * Creates a new eye tracking connection.
+	 * 
+	 * @example PEEP
+	 * @param theParent	Parent sketch containing this connection.
+	 * @param trackerID USB-ID or URL to connect to 
+	 * @param cheatCode Cheat code :) 
+	 *            	 */
+	public PEEP(PApplet theParent, String trackerID, String cheatCode) {
 		this.processing = theParent;
 		this.trackerID = trackerID == null ? "auto" : trackerID;
 
 		filter(Filter.MEDIAN);
 
-		initalizeTracking();
+		initalizeTracking(cheatCode);
 	}
 
 	/** Terminate the old tracker if possible */
@@ -131,8 +143,9 @@ public class PEEP implements GazeListener {
 		}
 	}
 
-	/** Initialize eye tracking */
-	private void initalizeTracking() {
+	/** Initialize eye tracking 
+	 * @param cheatCode */
+	private void initalizeTracking(String cheatCode) {
 		terminateOldTracker();
 
 		if ("mouse".equals(this.trackerID)) {
@@ -140,7 +153,7 @@ public class PEEP implements GazeListener {
 		} else if ("auto".equals(this.trackerID)) {
 			// In auto, first try to connect, then fall back to manual mode
 			try {
-				this.tracker = new EyeTracker(new Configuration());
+				this.tracker = new EyeTracker(new Configuration()).cheatcode(cheatCode);
 				this.tracker.register(this).connect().start();
 			} catch (APIException e) {
 				exception(e);
@@ -149,7 +162,7 @@ public class PEEP implements GazeListener {
 		} else {
 			// In this case we assume we have a true tracker URL.
 			try {
-				this.tracker = new EyeTracker(new Configuration(), this.trackerID);
+				this.tracker = new EyeTracker(new Configuration(), this.trackerID).cheatcode(cheatCode);
 				this.tracker.register(this).connect().start();
 			} catch (APIException e) {
 				exception(e);

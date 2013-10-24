@@ -24,6 +24,7 @@ Paste this code into your  [Processing](http://processing.org) sketch:
 
 	void setup() {
 	  peep = new PEEP(this);
+	  peep.filter(Filter.MEDIAN(5));
 	}
 
 	void draw() {
