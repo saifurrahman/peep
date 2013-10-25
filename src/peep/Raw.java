@@ -13,19 +13,28 @@ import tobii.util.V2;
  */
 public class Raw extends ExchangeableGazeEntity {
 	
-	protected Raw(PEEP peep, V2 rel, long time) {
+	protected Raw(PEEP peep, V2 rel, long time, boolean valid) {
 		super(peep);
 		
-		V2 filtered = peep.filter.filter(rel).v2();
+		// Only filter on valid data
+		V2 filtered;
+		
+		if(valid) {
+			filtered = peep.filter.filter(rel).v2();
+		} else {
+			filtered = rel.v2();
+		}
+		 
 		V2 docpos = peep.screenpx2window(peep.rel2pixel(filtered));
 		
 		this.x = (int) docpos.x();
 		this.y = (int) docpos.y();		
 		this.time = time; 
+		this.valid = valid;
 	}
 	
 	public static Raw empty(PEEP peep) {
-		return new Raw(peep, new V2(-1, -1), System.nanoTime() / 1000000);
+		return new Raw(peep, new V2(-1, -1), System.nanoTime() / 1000000, false);
 	}
 	
 		
@@ -34,7 +43,10 @@ public class Raw extends ExchangeableGazeEntity {
 
 	/** The y position on the processing window */
 	public final int y;
-
+	
+	/** If this measurement is a valid measurement. */
+	public final boolean valid;
+	
 	/** The relative time in ms of this event */
 	public final long time;
 	

@@ -127,7 +127,7 @@ public class PEEP implements GazeListener {
 		this.processing = theParent;
 		this.trackerID = trackerID == null ? "auto" : trackerID;
 
-		filter(Filter.MEDIAN);
+		filter(Filter.MEDIAN(3));
 
 		initalizeTracking(cheatCode);
 	}
@@ -251,17 +251,34 @@ public class PEEP implements GazeListener {
 		this.lowlevelGazeEvent = event;
 
 		// Create the Raw object based on the set eye to use.
-		V2 eyes = event.center().gazeOnDisplayNorm;		
+		V2 eyes = event.center().gazeOnDisplayNorm;
+		boolean validity = false;
+		
+		/*		TOBIIGAZE_TRACKING_STATUS_NO_EYES_TRACKED(0),
+				TOBIIGAZE_TRACKING_STATUS_BOTH_EYES_TRACKED(1),
+				TOBIIGAZE_TRACKING_STATUS_ONLY_LEFT_EYE_TRACKED(2),
+				TOBIIGAZE_TRACKING_STATUS_ONE_EYE_TRACKED_PROBABLY_LEFT(3),
+				TOBIIGAZE_TRACKING_STATUS_ONE_EYE_TRACKED_UNKNOWN_WHICH(4),
+				TOBIIGAZE_TRACKING_STATUS_ONE_EYE_TRACKED_PROBABLY_RIGHT(5),
+				TOBIIGAZE_TRACKING_STATUS_ONLY_RIGHT_EYE_TRACKED(6);
+		*/		
 		
 		if (this.eyes.equals(Eyes.LEFT)) {
 			eyes = event.left.gazeOnDisplayNorm;
+			validity = event.status == 1 || event.status == 2 || event.status == 3; 
 		}
 		
 		if (this.eyes.equals(Eyes.RIGHT)) {
 			eyes = event.right.gazeOnDisplayNorm;
+			validity = event.status == 1 || event.status == 6 || event.status == 5; 			
 		}
 		
-		this.raw = new Raw(this, eyes, event.nanoTimeReceived / 1000000);
+		if (this.eyes.equals(Eyes.BOTH)) {
+			validity = event.status > 0;
+		}
+
+		
+		this.raw = new Raw(this, eyes, event.nanoTimeReceived / 1000000, validity);
 	}
 
 	@Override
