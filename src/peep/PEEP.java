@@ -48,7 +48,6 @@ import tobii.util.V2;
  * 
  */
 public class PEEP implements GazeListener {
-
 	/** The current library version */
 	public final static String VERSION = "##library.prettyVersion##";
 
@@ -73,11 +72,24 @@ public class PEEP implements GazeListener {
 	 */
 	private String trackerID;
 
+	/** Eyes to use */
+	private Eyes eyes = Eyes.BOTH;
+
 	public PEEP filter(Filter filter) {
 		this.filter = filter;
 
 		gazeEvent(null);
 
+		return this;
+	}
+	
+	/**
+	 * Sets the eyes to use. 
+	 * @param eyes
+	 * @return
+	 */
+	public PEEP eyes(Eyes eyes) {
+		this.eyes = eyes;
 		return this;
 	}
 
@@ -147,13 +159,20 @@ public class PEEP implements GazeListener {
 	 * @param cheatCode */
 	private void initalizeTracking(String cheatCode) {
 		terminateOldTracker();
-
+		
+		Configuration configuration = new Configuration();
+		try {
+			configuration.init();	
+		} catch (APIException e) {
+			System.err.println("Error using config. Need to pass explicit tracker URL.");
+		}		
+		
 		if ("mouse".equals(this.trackerID)) {
 			useMouseTracker();
 		} else if ("auto".equals(this.trackerID)) {
 			// In auto, first try to connect, then fall back to manual mode
 			try {
-				this.tracker = new EyeTracker(new Configuration()).cheatcode(cheatCode);
+				this.tracker = new EyeTracker(configuration).cheatcode(cheatCode);
 				this.tracker.register(this).connect().start();
 			} catch (APIException e) {
 				exception(e);
@@ -162,7 +181,7 @@ public class PEEP implements GazeListener {
 		} else {
 			// In this case we assume we have a true tracker URL.
 			try {
-				this.tracker = new EyeTracker(new Configuration(), this.trackerID).cheatcode(cheatCode);
+				this.tracker = new EyeTracker(configuration, this.trackerID).cheatcode(cheatCode);
 				this.tracker.register(this).connect().start();
 			} catch (APIException e) {
 				exception(e);
@@ -230,7 +249,19 @@ public class PEEP implements GazeListener {
 		}
 
 		this.lowlevelGazeEvent = event;
-		this.raw = new Raw(this, event);
+
+		// Create the Raw object based on the set eye to use.
+		V2 eyes = event.center().gazeOnDisplayNorm;		
+		
+		if (this.eyes.equals(Eyes.LEFT)) {
+			eyes = event.left.gazeOnDisplayNorm;
+		}
+		
+		if (this.eyes.equals(Eyes.RIGHT)) {
+			eyes = event.right.gazeOnDisplayNorm;
+		}
+		
+		this.raw = new Raw(this, eyes, event.nanoTimeReceived / 1000000);
 	}
 
 	@Override

@@ -13,10 +13,6 @@ import tobii.util.V2;
  */
 public class Raw extends ExchangeableGazeEntity {
 	
-	protected Raw(PEEP peep, GazeEvent raw) {
-		this(peep, raw.center().gazeOnDisplayNorm, raw.nanoTimeReceived / 1000000);
-	}
-	
 	protected Raw(PEEP peep, V2 rel, long time) {
 		super(peep);
 		
