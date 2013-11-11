@@ -61,7 +61,7 @@ public class PEEP implements GazeListener {
 	private volatile GazeEvent lowlevelGazeEvent = null;
 
 	/** The current filter for the raw gaze data */
-	private volatile Raw raw;
+	private volatile CombinedRaw raw;
 
 	/** The current tracking device */
 	private Tracker tracker;
@@ -91,6 +91,10 @@ public class PEEP implements GazeListener {
 	public PEEP eyes(Eyes eyes) {
 		this.eyes = eyes;
 		return this;
+	}
+	
+	public Eyes eyes() {
+		return this.eyes;
 	}
 
 	/**
@@ -199,7 +203,7 @@ public class PEEP implements GazeListener {
 	 * 
 	 * @return The last event or a dummy if there was none.
 	 */
-	public Raw raw() {
+	public CombinedRaw raw() {
 		return this.raw;
 	}
 
@@ -213,6 +217,13 @@ public class PEEP implements GazeListener {
 		return this.lowlevelGazeEvent;
 	}
 
+	
+	/**
+	 * Converts a relative 0...1 value to a screen pixel coordinate.
+	 * 
+	 * @param rel
+	 * @return
+	 */
 	protected V2 rel2pixel(V2 rel) {
 		try {
 			final GraphicsDevice device = this.processing.frame.getGraphicsConfiguration().getDevice();
@@ -226,6 +237,12 @@ public class PEEP implements GazeListener {
 		}
 	}
 
+	/**
+	 * Converts a screen coordinate to the window coordinate.s
+	 * 
+	 * @param rel
+	 * @return
+	 */
 	protected V2 screenpx2window(V2 rel) {
 		try {
 			final Point bounds = this.processing.getLocationOnScreen();
@@ -241,46 +258,25 @@ public class PEEP implements GazeListener {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see tobii.GazeListener#gazeEvent(tobii.GazeEvent)
+	 */
 	@Override
 	public void gazeEvent(GazeEvent event) {
 		if (event == null) {
-			this.raw = Raw.empty(this);
+			this.raw = CombinedRaw.empty(this);
 			return;
 		}
 
-		this.lowlevelGazeEvent = event;
-
-		// Create the Raw object based on the set eye to use.
-		V2 eyes = event.center().gazeOnDisplayNorm;
-		boolean validity = false;
-		
-		/*		TOBIIGAZE_TRACKING_STATUS_NO_EYES_TRACKED(0),
-				TOBIIGAZE_TRACKING_STATUS_BOTH_EYES_TRACKED(1),
-				TOBIIGAZE_TRACKING_STATUS_ONLY_LEFT_EYE_TRACKED(2),
-				TOBIIGAZE_TRACKING_STATUS_ONE_EYE_TRACKED_PROBABLY_LEFT(3),
-				TOBIIGAZE_TRACKING_STATUS_ONE_EYE_TRACKED_UNKNOWN_WHICH(4),
-				TOBIIGAZE_TRACKING_STATUS_ONE_EYE_TRACKED_PROBABLY_RIGHT(5),
-				TOBIIGAZE_TRACKING_STATUS_ONLY_RIGHT_EYE_TRACKED(6);
-		*/		
-		
-		if (this.eyes.equals(Eyes.LEFT)) {
-			eyes = event.left.gazeOnDisplayNorm;
-			validity = event.status == 1 || event.status == 2 || event.status == 3; 
-		}
-		
-		if (this.eyes.equals(Eyes.RIGHT)) {
-			eyes = event.right.gazeOnDisplayNorm;
-			validity = event.status == 1 || event.status == 6 || event.status == 5; 			
-		}
-		
-		if (this.eyes.equals(Eyes.BOTH)) {
-			validity = event.status > 0;
-		}
-
-		
-		this.raw = new Raw(this, eyes, event.nanoTimeReceived / 1000000, validity);
+		this.lowlevelGazeEvent = event;		
+		this.raw = new CombinedRaw(this, event);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see tobii.GazeListener#apiException(tobii.APIException)
+	 */
 	@Override
 	public void apiException(APIException exception) {
 		exception(exception);

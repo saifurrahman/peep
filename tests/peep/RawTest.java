@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import peep.Raw;
+import peep.CombinedRaw;
 
 public class RawTest {
 
