@@ -9,6 +9,9 @@ public class SimpleTest {
 		
 		peep.lowlevel();
 		peep.filter(Filter.NONE);
+
+		System.out.println(peep.exception());
+		System.out.println(peep.url());
 		
 		while(true) {
 			Thread.sleep(50);
