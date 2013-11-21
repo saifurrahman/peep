@@ -65,6 +65,9 @@ public class PEEP implements GazeListener {
 
 	/** The current tracking device */
 	private Tracker tracker;
+	
+	/** The last thrown exception. */
+	private APIException lastexception = null;
 
 	/**
 	 * The ID of the tracker (e.g., "mouse", "auto",
@@ -168,7 +171,8 @@ public class PEEP implements GazeListener {
 		try {
 			configuration.init();	
 		} catch (APIException e) {
-			System.err.println("Error using config. Need to pass explicit tracker URL.");
+			System.err.println("Error using config. Need to pass explicit tracker URL. Reason:");
+			exception(e);
 		}		
 		
 		if ("mouse".equals(this.trackerID)) {
@@ -192,10 +196,23 @@ public class PEEP implements GazeListener {
 			}
 		}
 	}
+	
+	/**
+	 * Returns the last exception that was thrown or null if all is still 
+	 * good. Resets the internal exception in any case.
+	 * 
+	 * @return
+	 */
+	public APIException exception() {
+		final APIException rval = this.lastexception;
+		this.lastexception = null;
+		return rval;
+	}
 
 	protected void exception(APIException e) {
-		System.err.println("API EXCEPTION");
+		System.err.println("API EXCEPTION");		
 		System.err.println(e);
+		this.lastexception = e;
 	}
 
 	/**
@@ -217,6 +234,14 @@ public class PEEP implements GazeListener {
 		return this.lowlevelGazeEvent;
 	}
 
+	/**
+	 * Returns the url of the used tracker.
+	 * 
+	 * @return
+	 */
+	public String url() {
+		return this.tracker.url();
+	}
 	
 	/**
 	 * Converts a relative 0...1 value to a screen pixel coordinate.
