@@ -59,6 +59,11 @@ Or, if you are using [Processing.py](https://github.com/jdf/processing.py), use 
 
     Make sure your local Processing installation does not contain an older version of PEEP, these might conflict. If you don't and PEEP does not build, please file a bug report.
 
+  * __How do I connect to a specific tracker?__
+
+    Create the PEEP object like this: `new PEEP(this, "tet-tcp://TX300-010101004783.local.");`.
+    Observe that there is a trailing dot, but no trailing slash. You can get the URL from Tobii's *Eye Tracker Browser*.
+
 
   * __Does it work with 32bit JVMs?__
 
